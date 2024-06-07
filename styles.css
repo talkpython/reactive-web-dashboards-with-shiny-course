@@ -1,0 +1,33 @@
+/* css styles */
+
+#vcenter {
+    vertical-align: middle;
+}
+
+.callout .shinylive-wrapper {
+    border: none;
+    box-shadow: none;
+    margin: 0;
+}
+
+.someclass {
+    fill: rgb(240, 102, 255);
+}
+
+.panel-tabset .shinylive-container {
+    max-height: calc(80vh - 110px);
+    overflow: auto;
+    margin-bottom: 20px;
+}
+
+.v-center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90%;
+    background-color: brown;
+}
+
+.reveal div.column {
+    background-color: blueviolet;
+}
