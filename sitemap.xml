@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://talkpython.github.io/reactive-web-dashboards-with-shiny-course/exercises/4-dynamic-ui.html</loc>
-    <lastmod>2024-06-18T22:19:48.553Z</lastmod>
-  </url>
-  <url>
-    <loc>https://talkpython.github.io/reactive-web-dashboards-with-shiny-course/exercises/2-basic-ui.html</loc>
-    <lastmod>2024-06-18T22:19:48.553Z</lastmod>
+    <loc>https://talkpython.github.io/reactive-web-dashboards-with-shiny-course/index.html</loc>
+    <lastmod>2024-07-10T19:26:01.713Z</lastmod>
   </url>
   <url>
     <loc>https://talkpython.github.io/reactive-web-dashboards-with-shiny-course/exercises/5-reactive-effect.html</loc>
-    <lastmod>2024-06-18T22:19:48.553Z</lastmod>
-  </url>
-  <url>
-    <loc>https://talkpython.github.io/reactive-web-dashboards-with-shiny-course/index.html</loc>
-    <lastmod>2024-06-18T22:19:48.553Z</lastmod>
+    <lastmod>2024-07-10T19:26:01.713Z</lastmod>
   </url>
   <url>
     <loc>https://talkpython.github.io/reactive-web-dashboards-with-shiny-course/exercises/1-hello-world.html</loc>
-    <lastmod>2024-06-18T22:19:48.553Z</lastmod>
+    <lastmod>2024-07-10T19:26:01.713Z</lastmod>
+  </url>
+  <url>
+    <loc>https://talkpython.github.io/reactive-web-dashboards-with-shiny-course/exercises/4-dynamic-ui.html</loc>
+    <lastmod>2024-07-10T19:26:01.713Z</lastmod>
   </url>
   <url>
     <loc>https://talkpython.github.io/reactive-web-dashboards-with-shiny-course/exercises/3-reactivity.html</loc>
-    <lastmod>2024-06-18T22:19:48.553Z</lastmod>
+    <lastmod>2024-07-10T19:26:01.713Z</lastmod>
+  </url>
+  <url>
+    <loc>https://talkpython.github.io/reactive-web-dashboards-with-shiny-course/exercises/2-basic-ui.html</loc>
+    <lastmod>2024-07-10T19:26:01.713Z</lastmod>
   </url>
 </urlset>
