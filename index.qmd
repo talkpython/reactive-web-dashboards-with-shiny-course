@@ -15,31 +15,30 @@ This site is a companion to the [Talk Python video course](https://training.talk
 This course assumes that you have a basic understanding of Python, but does not require any knowledge of web applications, JavaScript, or HTML. 
 If you can read a CSV, manipulate data, and draw a plot in Python, then you have everything you need to start building a Shiny application. 
 
-
 # Setup
 
 There are two ways to work through the examples and exercises in this workshop.
 
 ## 1) In your web browser with Shinylive
 
-Shinylive allows you to run full-featured Shiny apps in your browser, and includes a basic editor that is good enough to run examples. 
-As a result, you should be able to work through all of the examples in the workshop using just the browser without installing anything locally.
+Shinylive allows you to run full-featured shiny apps in your browser, and includes a basic editor which is good enough to run examples.
+As a result you should be able to work through all of the examples in the workshop using just the browser without installing anything locally.
 
 ## 2) Locally with VS Code
 
 While Shinylive is great, it likely isn't the environment you'll use to develop Shiny apps, and so it makes sense to set up VS Code and run the examples locally. To do this, follow these steps before the workshop:
 
 1)  Install [VS Code](https://code.visualstudio.com/)
-2)  Install the Shiny for Python [VS Code extension](https://marketplace.visualstudio.com/items?itemName=posit.shiny-python)
-3)  Clone the repository with `git clone https://github.com/talkpython/reactive-web-dashboards-with-shiny-course.git`, or alternately download the repository as a zip file: \
+2)  Install the [Shiny extension for VS Code](https://marketplace.visualstudio.com/items?itemName=posit.shiny)
+3)  Clone the repository with `git clone https://github.com/rstudio/shiny-python-workshop-2023.git`, or alternately download the repository as a zip file: \
     ![](images/git-download-button.png){width="287"}
 4)  Navigate to the project directory and create a new virtual environment with `python3 -m venv .venv`
 5)  Set your Python interpreter to the virtual environment with `CMD + SHIFT + P` > `Select Interpreter`
 6)  Open a new terminal prompt, which should switch to `(.venv)`
 7)  Install the relevant packages with `pip install -r requirements.txt`
 
-All of the example apps are stored in the `/apps` directory. 
-The examples are in `apps/examples` and the problem sets are in `apps/problem-sets`. 
-If you've installed the Shiny for Python VS Code extension, you can run any of the apps by opening the `app.py` file and clicking the play button in the top right. ([See screenshot](https://camo.githubusercontent.com/5d947e6dff7d74fd1cf221e79583105c42e4986ae673ce79733ce5edbfdcdda5/68747470733a2f2f7368696e792e7273747564696f2e636f6d2f70792f646f63732f6173736574732f7673636f64652e706e67))
+All of the example apps are stored in the `/apps` directory.
+The examples are in `apps/examples` and the problem sets are in `apps/problem-sets`.
+If you've installed the Shiny extension for VS Code, you can run any of the apps by opening the `app.py` file and clicking the play button in the top right. ([See screenshot](https://camo.githubusercontent.com/5d947e6dff7d74fd1cf221e79583105c42e4986ae673ce79733ce5edbfdcdda5/68747470733a2f2f7368696e792e7273747564696f2e636f6d2f70792f646f63732f6173736574732f7673636f64652e706e67))
 
 Alternatively, run them from the command line with `shiny run <path-to-app.py> --reload`.

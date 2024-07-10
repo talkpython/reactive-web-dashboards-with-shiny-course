@@ -1,1 +1,1 @@
-Use `render.express` to create a second dropdown which only contains the unique `sub_account` values of the filtered data.
+Add a `ui.input_action_button` and a `@reactive.event` decorator to make a button that, when clicked, resets the slider to its initial values.

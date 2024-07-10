@@ -33,7 +33,7 @@ with ui.layout_columns():
         ui.card_header("Model Metrics")
 
         @render_plotly
-        def metric():
+        def metric_plot():
             # `account_data` is called similar to an input.
             if input.metric() == "ROC Curve":
                 return plot_auc_curve(
