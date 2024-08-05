@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.54">
+<meta name="generator" content="quarto-1.5.56">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -40,9 +40,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <meta name="shinylive:serviceworker_dir" content="..">
-<script src="../site_libs/quarto-contrib/shinylive-0.4.1/shinylive/load-shinylive-sw.js" type="module"></script>
-<script src="../site_libs/quarto-contrib/shinylive-0.4.1/shinylive/run-python-blocks.js" type="module"></script>
-<link href="../site_libs/quarto-contrib/shinylive-0.4.1/shinylive/shinylive.css" rel="stylesheet">
+<script src="../site_libs/quarto-contrib/shinylive-0.5.0/shinylive/load-shinylive-sw.js" type="module"></script>
+<script src="../site_libs/quarto-contrib/shinylive-0.5.0/shinylive/run-python-blocks.js" type="module"></script>
+<link href="../site_libs/quarto-contrib/shinylive-0.5.0/shinylive/shinylive.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/shinylive-quarto-css/shinylive-quarto.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/bootstrap-icons-1.9.1/all.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
@@ -302,6 +302,70 @@ with ui.layout_columns():
         def score_dist():
             return plot_score_distribution(character_filter())
 
+## file: plots.py
+import plotly.express as px
+from pandas import DataFrame
+import pandas as pd
+from sklearn.metrics import roc_curve, auc, precision_recall_curve
+import numpy as np
+
+
+import plotly.io as pio
+
+# Set the default plotly theme to resemble ggplot's theme_light
+pio.templates.default = "plotly_white"
+
+
+def plot_score_distribution(df: DataFrame):
+    fig = px.histogram(df, x="training_score", nbins=50, title="Model scores")
+    fig.update_layout(xaxis_title="Score", yaxis_title="Density")
+    return fig
+
+
+def plot_auc_curve(df: DataFrame, true_col: str, pred_col: str):
+    fpr, tpr, _ = roc_curve(df[true_col], df[pred_col])
+    roc_auc = auc(fpr, tpr)
+
+    roc_df = DataFrame({"False Positive Rate": fpr, "True Positive Rate": tpr})
+
+    fig = px.line(
+        roc_df,
+        x="False Positive Rate",
+        y="True Positive Rate",
+        title=f"Receiver Operating Characteristic (ROC) - AUC: {roc_auc.round(2)}",
+        labels={
+            "False Positive Rate": "False Positive Rate",
+            "True Positive Rate": "True Positive Rate",
+        },
+    )
+    fig.add_shape(type="line", line=dict(dash="dash"), x0=0, x1=1, y0=0, y1=1)
+    return fig
+
+
+def plot_precision_recall_curve(df: DataFrame, true_col: str, pred_col: str):
+    precision, recall, _ = precision_recall_curve(df[true_col], df[pred_col])
+
+    pr_df = DataFrame({"Recall": recall, "Precision": precision})
+
+    fig = px.line(
+        pr_df,
+        x="Recall",
+        y="Precision",
+        title="Precision-Recall Curve",
+        labels={"Recall": "Recall", "Precision": "Precision"},
+    )
+    return fig
+
+
+def plot_api_response(df):
+    account = df["account"].unique()
+
+    data = np.random.lognormal(0, 1 / len(account), 10000)
+    df = pd.DataFrame({"Value": data})
+    fig = px.histogram(df, x="Value", nbins=50, title="API response time")
+    fig.update_layout(xaxis_title="Seconds", yaxis_title="Density")
+    return fig
+
 ## file: simulated-data.csv
 id,account,text,date,is_electronics,training_score,prod_score,sub_account
 0,Berge &amp; Berge,"Forestone 2nd Gen MP4 Player with Voice Recorder/FM Radio/Video/Music Player for Android/iOS Devices Product Description&nbsp; Portable Mp3 Mp4 player, video player, music player, media player, audio player with photo viewer, E-book reader, voice recorder, games and movies. This is not an apple product and does not support iTunes. 1. 8 inch TFT LCD, full color display support AMV video, built-in game, digital record function, flash disk storage function, E-book function, support text file. 1. 78 inch high resolution real color LCD screen. This has no inbuilt memory so please use one external memory card of any size upto 32 GB. 2nd mp4 inspire you to listen music on it and it is very easy to play music having many functions which you can set by your choice like touch the key to play the songs then you can run this program smoothly without selecting one after other for this just make a playlist and add your favorite songs in it to play then you can enjoy your work without any disturbance. Highlight Built-in polymer Lithium batterY &gt;A-B repeat function &gt;Comes with FM radio stereo radio &gt;Built-in loudspeaker (optional) &gt;Supports audio formats: MP3 player, WMA, WMV and WAV &gt;Supports video formats: 3GP, MP4 player, AVI ONE YEAR REPLACEMENT WARRANTY ON DEFECTIVE PRODUCTS",2023-02-17,1,0.16943726,1.1618205506162425,Code Wranglers
@@ -1305,73 +1369,6 @@ id,account,text,date,is_electronics,training_score,prod_score,sub_account
 998,Wolff Ltd,"Cloth Fusion Microfiber Pack of 2 Plain Cushions - (18 x 18) Inches, White Item Package Quantity:2                                                                                &nbsp;|&nbsp;                           Size:2) 18""x18""/ 45x45 cm   Cloth Fusion Bring Premium Quality Cushion Fillers. Be It In Your Living Room Decor, These Cushion Fillers From Cloth Fusion Will Be A Perfect Pick. Made From Micro Fiber, These Cushion Fillers Are Fine In Quality And A Worthy Investment For Sure. Decorate Your Bed, Couch Or Sofa With These Cushion Fillers And Augment The Unique Style Of Your Home In An Instant. These Cushion Fillers By Cloth Fusion Is Sure To Brighten Up Your Home Decor.. These Cushion Filler Suits Both Of The Modern Decors And The Sophistication Of Traditional Ones. Cloth Fusion Cotton Cushion Fillers Are The Perfect Gift To Use In Sofa, Couch, Chair, Bed, School, For Travel And Naps. The Cushion Comes In A Vacuum Packing, It Automatically Inflates And Retain Its Shape In A Few Mins After Opening The Packet.   Cloth Fusion Is A Well-Known Brand For Quality Product. Material : Cotton, Filling : Hollow Siliconized Polyester Fiber For Durability And Softness. Comfortable, Soft, Stylish Cousin Fillers. The Cushion Filler Would Be Compressed Packed.  Soft Luxury Cushion Filler.  It's Give The Graceful And Modern Look For Your Home.  Cloth Fusion Cushion Fillers Are Designed For Comfort.  These Cushion Fillers Are Also Having A Smooth, Luxurious Feel.  Cloth Fusion Is A Premium Brand That Manufactures And Supplies High Quality Luxury And Hotel Quality Products.",2023-01-24,0,0.017293109,1.11101882511548,Server Surfers
 999,Wolff Ltd,"InstaCuppa Steel French Press Travel Mug, 400ml, Black Color Name:Black   Enjoy Fresher, More Delicious Coffee and Tea with Your Own InstaCuppa Coffee Press! If you love coffee or tea, there’s nothing like enjoying a fresh, delicious cup crafted in your own InstaCuppa Travel Press!  Ideal for pressing coffee grounds or loose-leaf tea on the go, you can brew and drink delicious blends wherever life takes you.   Complete with temperature-retaining, vacuumed sealed walls that eliminates condensation and keep your beverage the perfect freshness for hours on end.   This is the ultimate French press mug for people who value pure, natural quality.   Product Details:    Coffee and Tea French Press. Double-Walled Vacuum Insulation. Sweat and Condensation Free. Spill Proof, Airtight Seal. Holds Heat for 6 Hours. Holds Cold for 12 Hours.",2023-01-26,0,0.33065912,1.0886532899948944,Server Surfers
 
-## file: plots.py
-import plotly.express as px
-from pandas import DataFrame
-import pandas as pd
-from sklearn.metrics import roc_curve, auc, precision_recall_curve
-import numpy as np
-
-
-import plotly.io as pio
-
-# Set the default plotly theme to resemble ggplot's theme_light
-pio.templates.default = "plotly_white"
-
-
-def plot_score_distribution(df: DataFrame):
-    fig = px.histogram(df, x="training_score", nbins=50, title="Model scores")
-    fig.update_layout(xaxis_title="Score", yaxis_title="Density")
-    return fig
-
-
-def plot_auc_curve(df: DataFrame, true_col: str, pred_col: str):
-    fpr, tpr, _ = roc_curve(df[true_col], df[pred_col])
-    roc_auc = auc(fpr, tpr)
-
-    roc_df = DataFrame({"False Positive Rate": fpr, "True Positive Rate": tpr})
-
-    fig = px.line(
-        roc_df,
-        x="False Positive Rate",
-        y="True Positive Rate",
-        title=f"Receiver Operating Characteristic (ROC) - AUC: {roc_auc.round(2)}",
-        labels={
-            "False Positive Rate": "False Positive Rate",
-            "True Positive Rate": "True Positive Rate",
-        },
-    )
-    fig.add_shape(type="line", line=dict(dash="dash"), x0=0, x1=1, y0=0, y1=1)
-    return fig
-
-
-def plot_precision_recall_curve(df: DataFrame, true_col: str, pred_col: str):
-    precision, recall, _ = precision_recall_curve(df[true_col], df[pred_col])
-
-    pr_df = DataFrame({"Recall": recall, "Precision": precision})
-
-    fig = px.line(
-        pr_df,
-        x="Recall",
-        y="Precision",
-        title="Precision-Recall Curve",
-        labels={"Recall": "Recall", "Precision": "Precision"},
-    )
-    return fig
-
-
-def plot_api_response(df):
-    account = df["account"].unique()
-
-    data = np.random.lognormal(0, 1 / len(account), 10000)
-    df = pd.DataFrame({"Value": data})
-    fig = px.histogram(df, x="Value", nbins=50, title="API response time")
-    fig.update_layout(xaxis_title="Seconds", yaxis_title="Density")
-    return fig
-
-## file: requirements.txt
-pandas
-plotly
 ## file: data_import.py
 from pathlib import Path
 import pandas as pd
@@ -1381,7 +1378,10 @@ file_path = Path(__file__).parent / "simulated-data.csv"
 
 df = pd.read_csv(file_path, dtype={"sub_account": str})
 df["date"] = pd.to_datetime(df["date"], errors="coerce")
-</code></pre>
+
+## file: requirements.txt
+pandas
+plotly</code></pre>
 </div>
 <div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="callout callout-style-default callout-note callout-titled">
@@ -1467,6 +1467,70 @@ with ui.layout_columns():
         def score_dist():
             return plot_score_distribution(character_filter())
 
+## file: plots.py
+import plotly.express as px
+from pandas import DataFrame
+import pandas as pd
+from sklearn.metrics import roc_curve, auc, precision_recall_curve
+import numpy as np
+
+
+import plotly.io as pio
+
+# Set the default plotly theme to resemble ggplot's theme_light
+pio.templates.default = "plotly_white"
+
+
+def plot_score_distribution(df: DataFrame):
+    fig = px.histogram(df, x="training_score", nbins=50, title="Model scores")
+    fig.update_layout(xaxis_title="Score", yaxis_title="Density")
+    return fig
+
+
+def plot_auc_curve(df: DataFrame, true_col: str, pred_col: str):
+    fpr, tpr, _ = roc_curve(df[true_col], df[pred_col])
+    roc_auc = auc(fpr, tpr)
+
+    roc_df = DataFrame({"False Positive Rate": fpr, "True Positive Rate": tpr})
+
+    fig = px.line(
+        roc_df,
+        x="False Positive Rate",
+        y="True Positive Rate",
+        title=f"Receiver Operating Characteristic (ROC) - AUC: {roc_auc.round(2)}",
+        labels={
+            "False Positive Rate": "False Positive Rate",
+            "True Positive Rate": "True Positive Rate",
+        },
+    )
+    fig.add_shape(type="line", line=dict(dash="dash"), x0=0, x1=1, y0=0, y1=1)
+    return fig
+
+
+def plot_precision_recall_curve(df: DataFrame, true_col: str, pred_col: str):
+    precision, recall, _ = precision_recall_curve(df[true_col], df[pred_col])
+
+    pr_df = DataFrame({"Recall": recall, "Precision": precision})
+
+    fig = px.line(
+        pr_df,
+        x="Recall",
+        y="Precision",
+        title="Precision-Recall Curve",
+        labels={"Recall": "Recall", "Precision": "Precision"},
+    )
+    return fig
+
+
+def plot_api_response(df):
+    account = df["account"].unique()
+
+    data = np.random.lognormal(0, 1 / len(account), 10000)
+    df = pd.DataFrame({"Value": data})
+    fig = px.histogram(df, x="Value", nbins=50, title="API response time")
+    fig.update_layout(xaxis_title="Seconds", yaxis_title="Density")
+    return fig
+
 ## file: simulated-data.csv
 id,account,text,date,is_electronics,training_score,prod_score,sub_account
 0,Berge &amp; Berge,"Forestone 2nd Gen MP4 Player with Voice Recorder/FM Radio/Video/Music Player for Android/iOS Devices Product Description&nbsp; Portable Mp3 Mp4 player, video player, music player, media player, audio player with photo viewer, E-book reader, voice recorder, games and movies. This is not an apple product and does not support iTunes. 1. 8 inch TFT LCD, full color display support AMV video, built-in game, digital record function, flash disk storage function, E-book function, support text file. 1. 78 inch high resolution real color LCD screen. This has no inbuilt memory so please use one external memory card of any size upto 32 GB. 2nd mp4 inspire you to listen music on it and it is very easy to play music having many functions which you can set by your choice like touch the key to play the songs then you can run this program smoothly without selecting one after other for this just make a playlist and add your favorite songs in it to play then you can enjoy your work without any disturbance. Highlight Built-in polymer Lithium batterY &gt;A-B repeat function &gt;Comes with FM radio stereo radio &gt;Built-in loudspeaker (optional) &gt;Supports audio formats: MP3 player, WMA, WMV and WAV &gt;Supports video formats: 3GP, MP4 player, AVI ONE YEAR REPLACEMENT WARRANTY ON DEFECTIVE PRODUCTS",2023-02-17,1,0.16943726,1.1618205506162425,Code Wranglers
@@ -2470,73 +2534,6 @@ id,account,text,date,is_electronics,training_score,prod_score,sub_account
 998,Wolff Ltd,"Cloth Fusion Microfiber Pack of 2 Plain Cushions - (18 x 18) Inches, White Item Package Quantity:2                                                                                &nbsp;|&nbsp;                           Size:2) 18""x18""/ 45x45 cm   Cloth Fusion Bring Premium Quality Cushion Fillers. Be It In Your Living Room Decor, These Cushion Fillers From Cloth Fusion Will Be A Perfect Pick. Made From Micro Fiber, These Cushion Fillers Are Fine In Quality And A Worthy Investment For Sure. Decorate Your Bed, Couch Or Sofa With These Cushion Fillers And Augment The Unique Style Of Your Home In An Instant. These Cushion Fillers By Cloth Fusion Is Sure To Brighten Up Your Home Decor.. These Cushion Filler Suits Both Of The Modern Decors And The Sophistication Of Traditional Ones. Cloth Fusion Cotton Cushion Fillers Are The Perfect Gift To Use In Sofa, Couch, Chair, Bed, School, For Travel And Naps. The Cushion Comes In A Vacuum Packing, It Automatically Inflates And Retain Its Shape In A Few Mins After Opening The Packet.   Cloth Fusion Is A Well-Known Brand For Quality Product. Material : Cotton, Filling : Hollow Siliconized Polyester Fiber For Durability And Softness. Comfortable, Soft, Stylish Cousin Fillers. The Cushion Filler Would Be Compressed Packed.  Soft Luxury Cushion Filler.  It's Give The Graceful And Modern Look For Your Home.  Cloth Fusion Cushion Fillers Are Designed For Comfort.  These Cushion Fillers Are Also Having A Smooth, Luxurious Feel.  Cloth Fusion Is A Premium Brand That Manufactures And Supplies High Quality Luxury And Hotel Quality Products.",2023-01-24,0,0.017293109,1.11101882511548,Server Surfers
 999,Wolff Ltd,"InstaCuppa Steel French Press Travel Mug, 400ml, Black Color Name:Black   Enjoy Fresher, More Delicious Coffee and Tea with Your Own InstaCuppa Coffee Press! If you love coffee or tea, there’s nothing like enjoying a fresh, delicious cup crafted in your own InstaCuppa Travel Press!  Ideal for pressing coffee grounds or loose-leaf tea on the go, you can brew and drink delicious blends wherever life takes you.   Complete with temperature-retaining, vacuumed sealed walls that eliminates condensation and keep your beverage the perfect freshness for hours on end.   This is the ultimate French press mug for people who value pure, natural quality.   Product Details:    Coffee and Tea French Press. Double-Walled Vacuum Insulation. Sweat and Condensation Free. Spill Proof, Airtight Seal. Holds Heat for 6 Hours. Holds Cold for 12 Hours.",2023-01-26,0,0.33065912,1.0886532899948944,Server Surfers
 
-## file: plots.py
-import plotly.express as px
-from pandas import DataFrame
-import pandas as pd
-from sklearn.metrics import roc_curve, auc, precision_recall_curve
-import numpy as np
-
-
-import plotly.io as pio
-
-# Set the default plotly theme to resemble ggplot's theme_light
-pio.templates.default = "plotly_white"
-
-
-def plot_score_distribution(df: DataFrame):
-    fig = px.histogram(df, x="training_score", nbins=50, title="Model scores")
-    fig.update_layout(xaxis_title="Score", yaxis_title="Density")
-    return fig
-
-
-def plot_auc_curve(df: DataFrame, true_col: str, pred_col: str):
-    fpr, tpr, _ = roc_curve(df[true_col], df[pred_col])
-    roc_auc = auc(fpr, tpr)
-
-    roc_df = DataFrame({"False Positive Rate": fpr, "True Positive Rate": tpr})
-
-    fig = px.line(
-        roc_df,
-        x="False Positive Rate",
-        y="True Positive Rate",
-        title=f"Receiver Operating Characteristic (ROC) - AUC: {roc_auc.round(2)}",
-        labels={
-            "False Positive Rate": "False Positive Rate",
-            "True Positive Rate": "True Positive Rate",
-        },
-    )
-    fig.add_shape(type="line", line=dict(dash="dash"), x0=0, x1=1, y0=0, y1=1)
-    return fig
-
-
-def plot_precision_recall_curve(df: DataFrame, true_col: str, pred_col: str):
-    precision, recall, _ = precision_recall_curve(df[true_col], df[pred_col])
-
-    pr_df = DataFrame({"Recall": recall, "Precision": precision})
-
-    fig = px.line(
-        pr_df,
-        x="Recall",
-        y="Precision",
-        title="Precision-Recall Curve",
-        labels={"Recall": "Recall", "Precision": "Precision"},
-    )
-    return fig
-
-
-def plot_api_response(df):
-    account = df["account"].unique()
-
-    data = np.random.lognormal(0, 1 / len(account), 10000)
-    df = pd.DataFrame({"Value": data})
-    fig = px.histogram(df, x="Value", nbins=50, title="API response time")
-    fig.update_layout(xaxis_title="Seconds", yaxis_title="Density")
-    return fig
-
-## file: requirements.txt
-pandas
-plotly
 ## file: data_import.py
 from pathlib import Path
 import pandas as pd
@@ -2546,7 +2543,10 @@ file_path = Path(__file__).parent / "simulated-data.csv"
 
 df = pd.read_csv(file_path, dtype={"sub_account": str})
 df["date"] = pd.to_datetime(df["date"], errors="coerce")
-</code></pre>
+
+## file: requirements.txt
+pandas
+plotly</code></pre>
 </div>
 <div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="callout callout-style-default callout-note callout-titled">
@@ -2644,6 +2644,70 @@ with ui.layout_columns():
         def score_dist():
             return plot_score_distribution(character_filter())
 
+## file: plots.py
+import plotly.express as px
+from pandas import DataFrame
+import pandas as pd
+from sklearn.metrics import roc_curve, auc, precision_recall_curve
+import numpy as np
+
+
+import plotly.io as pio
+
+# Set the default plotly theme to resemble ggplot's theme_light
+pio.templates.default = "plotly_white"
+
+
+def plot_score_distribution(df: DataFrame):
+    fig = px.histogram(df, x="training_score", nbins=50, title="Model scores")
+    fig.update_layout(xaxis_title="Score", yaxis_title="Density")
+    return fig
+
+
+def plot_auc_curve(df: DataFrame, true_col: str, pred_col: str):
+    fpr, tpr, _ = roc_curve(df[true_col], df[pred_col])
+    roc_auc = auc(fpr, tpr)
+
+    roc_df = DataFrame({"False Positive Rate": fpr, "True Positive Rate": tpr})
+
+    fig = px.line(
+        roc_df,
+        x="False Positive Rate",
+        y="True Positive Rate",
+        title=f"Receiver Operating Characteristic (ROC) - AUC: {roc_auc.round(2)}",
+        labels={
+            "False Positive Rate": "False Positive Rate",
+            "True Positive Rate": "True Positive Rate",
+        },
+    )
+    fig.add_shape(type="line", line=dict(dash="dash"), x0=0, x1=1, y0=0, y1=1)
+    return fig
+
+
+def plot_precision_recall_curve(df: DataFrame, true_col: str, pred_col: str):
+    precision, recall, _ = precision_recall_curve(df[true_col], df[pred_col])
+
+    pr_df = DataFrame({"Recall": recall, "Precision": precision})
+
+    fig = px.line(
+        pr_df,
+        x="Recall",
+        y="Precision",
+        title="Precision-Recall Curve",
+        labels={"Recall": "Recall", "Precision": "Precision"},
+    )
+    return fig
+
+
+def plot_api_response(df):
+    account = df["account"].unique()
+
+    data = np.random.lognormal(0, 1 / len(account), 10000)
+    df = pd.DataFrame({"Value": data})
+    fig = px.histogram(df, x="Value", nbins=50, title="API response time")
+    fig.update_layout(xaxis_title="Seconds", yaxis_title="Density")
+    return fig
+
 ## file: simulated-data.csv
 id,account,text,date,is_electronics,training_score,prod_score,sub_account
 0,Berge &amp; Berge,"Forestone 2nd Gen MP4 Player with Voice Recorder/FM Radio/Video/Music Player for Android/iOS Devices Product Description&nbsp; Portable Mp3 Mp4 player, video player, music player, media player, audio player with photo viewer, E-book reader, voice recorder, games and movies. This is not an apple product and does not support iTunes. 1. 8 inch TFT LCD, full color display support AMV video, built-in game, digital record function, flash disk storage function, E-book function, support text file. 1. 78 inch high resolution real color LCD screen. This has no inbuilt memory so please use one external memory card of any size upto 32 GB. 2nd mp4 inspire you to listen music on it and it is very easy to play music having many functions which you can set by your choice like touch the key to play the songs then you can run this program smoothly without selecting one after other for this just make a playlist and add your favorite songs in it to play then you can enjoy your work without any disturbance. Highlight Built-in polymer Lithium batterY &gt;A-B repeat function &gt;Comes with FM radio stereo radio &gt;Built-in loudspeaker (optional) &gt;Supports audio formats: MP3 player, WMA, WMV and WAV &gt;Supports video formats: 3GP, MP4 player, AVI ONE YEAR REPLACEMENT WARRANTY ON DEFECTIVE PRODUCTS",2023-02-17,1,0.16943726,1.1618205506162425,Code Wranglers
@@ -3647,73 +3711,6 @@ id,account,text,date,is_electronics,training_score,prod_score,sub_account
 998,Wolff Ltd,"Cloth Fusion Microfiber Pack of 2 Plain Cushions - (18 x 18) Inches, White Item Package Quantity:2                                                                                &nbsp;|&nbsp;                           Size:2) 18""x18""/ 45x45 cm   Cloth Fusion Bring Premium Quality Cushion Fillers. Be It In Your Living Room Decor, These Cushion Fillers From Cloth Fusion Will Be A Perfect Pick. Made From Micro Fiber, These Cushion Fillers Are Fine In Quality And A Worthy Investment For Sure. Decorate Your Bed, Couch Or Sofa With These Cushion Fillers And Augment The Unique Style Of Your Home In An Instant. These Cushion Fillers By Cloth Fusion Is Sure To Brighten Up Your Home Decor.. These Cushion Filler Suits Both Of The Modern Decors And The Sophistication Of Traditional Ones. Cloth Fusion Cotton Cushion Fillers Are The Perfect Gift To Use In Sofa, Couch, Chair, Bed, School, For Travel And Naps. The Cushion Comes In A Vacuum Packing, It Automatically Inflates And Retain Its Shape In A Few Mins After Opening The Packet.   Cloth Fusion Is A Well-Known Brand For Quality Product. Material : Cotton, Filling : Hollow Siliconized Polyester Fiber For Durability And Softness. Comfortable, Soft, Stylish Cousin Fillers. The Cushion Filler Would Be Compressed Packed.  Soft Luxury Cushion Filler.  It's Give The Graceful And Modern Look For Your Home.  Cloth Fusion Cushion Fillers Are Designed For Comfort.  These Cushion Fillers Are Also Having A Smooth, Luxurious Feel.  Cloth Fusion Is A Premium Brand That Manufactures And Supplies High Quality Luxury And Hotel Quality Products.",2023-01-24,0,0.017293109,1.11101882511548,Server Surfers
 999,Wolff Ltd,"InstaCuppa Steel French Press Travel Mug, 400ml, Black Color Name:Black   Enjoy Fresher, More Delicious Coffee and Tea with Your Own InstaCuppa Coffee Press! If you love coffee or tea, there’s nothing like enjoying a fresh, delicious cup crafted in your own InstaCuppa Travel Press!  Ideal for pressing coffee grounds or loose-leaf tea on the go, you can brew and drink delicious blends wherever life takes you.   Complete with temperature-retaining, vacuumed sealed walls that eliminates condensation and keep your beverage the perfect freshness for hours on end.   This is the ultimate French press mug for people who value pure, natural quality.   Product Details:    Coffee and Tea French Press. Double-Walled Vacuum Insulation. Sweat and Condensation Free. Spill Proof, Airtight Seal. Holds Heat for 6 Hours. Holds Cold for 12 Hours.",2023-01-26,0,0.33065912,1.0886532899948944,Server Surfers
 
-## file: plots.py
-import plotly.express as px
-from pandas import DataFrame
-import pandas as pd
-from sklearn.metrics import roc_curve, auc, precision_recall_curve
-import numpy as np
-
-
-import plotly.io as pio
-
-# Set the default plotly theme to resemble ggplot's theme_light
-pio.templates.default = "plotly_white"
-
-
-def plot_score_distribution(df: DataFrame):
-    fig = px.histogram(df, x="training_score", nbins=50, title="Model scores")
-    fig.update_layout(xaxis_title="Score", yaxis_title="Density")
-    return fig
-
-
-def plot_auc_curve(df: DataFrame, true_col: str, pred_col: str):
-    fpr, tpr, _ = roc_curve(df[true_col], df[pred_col])
-    roc_auc = auc(fpr, tpr)
-
-    roc_df = DataFrame({"False Positive Rate": fpr, "True Positive Rate": tpr})
-
-    fig = px.line(
-        roc_df,
-        x="False Positive Rate",
-        y="True Positive Rate",
-        title=f"Receiver Operating Characteristic (ROC) - AUC: {roc_auc.round(2)}",
-        labels={
-            "False Positive Rate": "False Positive Rate",
-            "True Positive Rate": "True Positive Rate",
-        },
-    )
-    fig.add_shape(type="line", line=dict(dash="dash"), x0=0, x1=1, y0=0, y1=1)
-    return fig
-
-
-def plot_precision_recall_curve(df: DataFrame, true_col: str, pred_col: str):
-    precision, recall, _ = precision_recall_curve(df[true_col], df[pred_col])
-
-    pr_df = DataFrame({"Recall": recall, "Precision": precision})
-
-    fig = px.line(
-        pr_df,
-        x="Recall",
-        y="Precision",
-        title="Precision-Recall Curve",
-        labels={"Recall": "Recall", "Precision": "Precision"},
-    )
-    return fig
-
-
-def plot_api_response(df):
-    account = df["account"].unique()
-
-    data = np.random.lognormal(0, 1 / len(account), 10000)
-    df = pd.DataFrame({"Value": data})
-    fig = px.histogram(df, x="Value", nbins=50, title="API response time")
-    fig.update_layout(xaxis_title="Seconds", yaxis_title="Density")
-    return fig
-
-## file: requirements.txt
-pandas
-plotly
 ## file: data_import.py
 from pathlib import Path
 import pandas as pd
@@ -3723,7 +3720,10 @@ file_path = Path(__file__).parent / "simulated-data.csv"
 
 df = pd.read_csv(file_path, dtype={"sub_account": str})
 df["date"] = pd.to_datetime(df["date"], errors="coerce")
-</code></pre>
+
+## file: requirements.txt
+pandas
+plotly</code></pre>
 </div>
 <div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
 <p>The source code for this exercise is <a href="https://github.com/talkpython/reactive-web-dashboards-with-shiny-course/tree/main/apps/problem-sets/4-dynamic-ui/4.1-render-express">here</a>.</p>
